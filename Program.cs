@@ -1,49 +1,18 @@
-﻿using System.Text.Json;
-
-public static partial class JsonExtensions
+﻿namespace JSON_Test
 {
-    public static JsonElement? Get(this JsonElement element, string name) =>
-        element.ValueKind != JsonValueKind.Null && element.ValueKind != JsonValueKind.Undefined && element.TryGetProperty(name, out var value)
-            ? value : (JsonElement?)null;
-
-    public static JsonElement? Get(this JsonElement element, int index)
+    public class Program
     {
-        if (element.ValueKind == JsonValueKind.Null || element.ValueKind == JsonValueKind.Undefined)
-            return null;
-        // Throw if index < 0
-        return index < element.GetArrayLength() ? element[index] : null;
-    }
-}
-
-
-public static class Test 
-{
-    public static double SEVERITY_ = 0.0;
-    private static double? Sev;
-
-    private async static Task GetCVE(string CVE)
-    {
-        using (var client = new HttpClient())
+        public static string ReportPath = "";
+        public static void Main()
         {
-            // Gets JSON representation of CVE-Attributes
-            var json = await client.GetStringAsync("https://services.nvd.nist.gov/rest/json/cve/1.0/" + CVE);
-            var doc = JsonSerializer.Deserialize<JsonElement>(json);
-
-            var node = doc.Get("result")?.Get("CVE_Items")?.Get(0)?.Get("impact")?.Get("baseMetricV2")?.Get("cvssV2");
-
-            Sev = (node?.Get("baseScore")?.GetDouble());
-
-            if (Sev != null)
-                SEVERITY_ = Sev.Value;
+            Console.Write("Enter full path to exported Report: ");
+            ReportPath = Console.ReadLine();
+            if (File.Exists(ReportPath) && ReportPath.EndsWith(".csv"))
+            {
+                // Populate Datatable
+                Data.dt = Data.ReadCSV(ReportPath);
+            }
+            Console.ReadLine();
         }
-    }
-
-    public static void Main()
-    {
-        Task t = GetCVE("CVE-2008-4114");
-        t.GetAwaiter().GetResult();
-
-        Console.WriteLine(SEVERITY_);
-        Console.ReadLine();
     }
 }
