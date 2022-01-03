@@ -10,8 +10,9 @@
             if (File.Exists(ReportPath) && ReportPath.EndsWith(".csv"))
             {
                 // Populate Datatable
-                Data.dt = Data.ReadCSV(ReportPath);
+                Data.dt = Data.ReadCSV(Data.dt,ReportPath);
             }
+            Visualization.PrintUI();
             Console.ReadLine();
         }
     }

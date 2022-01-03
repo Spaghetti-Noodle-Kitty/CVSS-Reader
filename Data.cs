@@ -5,7 +5,7 @@ namespace JSON_Test
     public class Data
     {
         public static DataTable dt = new DataTable("Report");
-        
+
         public static void main()
         {
             // Define DataTable with the same Columns the Report.csv has
@@ -36,19 +36,19 @@ namespace JSON_Test
             dt.Columns.Add(new DataColumn("Other References", typeof(string)));
         }
 
-        public static DataTable ReadCSV(string strFilePath)
+        /*public static DataTable ReadCSV(string strFilePath)
         {
             DataTable dt = new DataTable();
             using (StreamReader sr = new StreamReader(strFilePath))
             {
-                string[] headers = sr.ReadLine().Split(',');
+                string[] headers = sr.ReadLine().Split(';');
                 foreach (string header in headers)
                 {
                     dt.Columns.Add(header);
                 }
                 while (!sr.EndOfStream)
                 {
-                    string[] rows = sr.ReadLine().Split(',');
+                    string[] rows = sr.ReadLine().Split(';');
                     DataRow dr = dt.NewRow();
                     for (int i = 0; i < headers.Length; i++)
                     {
@@ -61,6 +61,28 @@ namespace JSON_Test
 
 
             return dt;
+        }*/
+        public static DataTable ReadCSV(DataTable tableStructure, string filepath)
+        {
+            try
+            {
+                int i = 0;
+
+                //Using File.ReadAllLines Method To Read The CSV File.
+                foreach (string split in File.ReadAllText(filepath, System.Text.Encoding.UTF7).Split('\r'))
+                {
+
+                    if (i > 0)
+                        tableStructure.Rows.Add(split.Split(';'));
+                    else
+                        i++;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            return tableStructure;
         }
     }
 }
